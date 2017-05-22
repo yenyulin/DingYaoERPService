@@ -23,10 +23,10 @@ namespace DingYaoERP.Common
         //資料庫連接字符串(web.config)
         
         //Test
-        public static readonly string CS = "SERVER=60.250.64.133,6633;DATABASE=DingYaoERP;UID=WebAP;Password=webap2008$$";
+        //public static readonly string CS = "SERVER=60.250.64.133,6633;DATABASE=DingYaoERP;UID=WebAP;Password=webap2008$$";
 
         //Server
-        //public static readonly string CS = "SERVER=AMIGO;DATABASE=DingYaoERP;UID=WebAP;Password=DingYao2015";
+        public static readonly string CS = "SERVER=AMIGO;DATABASE=DingYaoERP;UID=WebAP;Password=DingYao2015";
        
 
         //顯示設定序號

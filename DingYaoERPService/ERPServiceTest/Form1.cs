@@ -181,7 +181,7 @@ namespace ERPServiceTest
                 //預設
                 //DateTime dt = DateTime.Now;
 
-                DateTime dt = Convert.ToDateTime("2017/2/1");
+                DateTime dt = Convert.ToDateTime("2017/4/1");
 
                 List<MCustomerLevel> liLevel = new DCustomerLevel().GetList();
 

@@ -226,7 +226,7 @@ namespace DingYaoERPService
                 //預設
                 DateTime dt = DateTime.Now;
 
-                //DateTime dt = Convert.ToDateTime("2017/4/1");
+                //DateTime dt = Convert.ToDateTime("2017/2/1");
 
                 List<MCustomerLevel> liLevel = new DCustomerLevel().GetList();
 
@@ -254,6 +254,13 @@ namespace DingYaoERPService
                     string strOrderDueDateCount = dr["OrderDueDateCount"].ToString();
                     string strOrderDayCount = dr["OrderDayCount"].ToString();
 
+                    string strOrderAccountsReceivable = dr["OrderAccountsReceivable"].ToString();
+                    string strReturnAccountsReceivable = dr["ReturnAccountsReceivable"].ToString();
+                    string strOrderSubQty = dr["OrderSubQty"].ToString();
+                    string strOrderSubWeight = dr["OrderSubWeight"].ToString();
+                    string strReturnSubQty = dr["ReturnSubQty"].ToString();
+                    string strReturnSubWeight = dr["ReturnSubWeight"].ToString();
+
 
                     MCustomer mCu = new DCustomer().GetModel(strCustomerID);
                     mCu.CustomerLevelIDLast = Convert.ToInt32(strCustomerLevelID);
@@ -265,8 +272,41 @@ namespace DingYaoERPService
                     }
                     decimal decSubAccountsReceivable = Convert.ToDecimal(strSumMoney);
 
+                    if (strOrderDayCount.Length == 0)
+                    {
+                        strOrderDayCount = "0";
+                    }
+
+                    if (strOrderAccountsReceivable.Length == 0)
+                    {
+                        strOrderAccountsReceivable = "0";
+                    }
+
+                    if (strReturnAccountsReceivable.Length == 0)
+                    {
+                        strReturnAccountsReceivable = "0";
+                    }
+
+                    if (strOrderSubQty.Length == 0)
+                    {
+                        strOrderSubQty = "0";
+                    }
+                    if (strOrderSubWeight.Length == 0)
+                    {
+                        strOrderSubWeight = "0";
+                    }
+                    if (strReturnSubQty.Length == 0)
+                    {
+                        strReturnSubQty = "0";
+                    }
+                    if (strReturnSubWeight.Length == 0)
+                    {
+                        strReturnSubWeight = "0";
+                    }
+
                     MCustomerMonthSubAR mod = new MCustomerMonthSubAR();
                     mod.CustomerID = strCustomerID;
+
                     if (strOrderDueDateCount.Length == 0)
                     {
                         mod.PurchaseFrequency = null;
@@ -278,7 +318,13 @@ namespace DingYaoERPService
                         mod.OrderDayCount = Convert.ToInt32(strOrderDayCount);
                     }
                     mod.SubAccountsReceivable = decSubAccountsReceivable;
-                    //mod.CustomerLevelID = Convert.ToInt32(strCustomerLevelID);
+
+                    mod.OrderAccountsReceivable = Convert.ToDecimal(strOrderAccountsReceivable);
+                    mod.ReturnAccountsReceivable = Convert.ToDecimal(strReturnAccountsReceivable);
+                    mod.OrderSubQty = Convert.ToDecimal(strOrderSubQty);
+                    mod.OrderSubWeight = Convert.ToDecimal(strOrderSubWeight);
+                    mod.ReturnSubQty = Convert.ToDecimal(strReturnSubQty);
+                    mod.ReturnSubWeight = Convert.ToDecimal(strReturnSubWeight);
 
                     decimal decTotal = 0;
                     DataSet dsSubTotal = new DCustomerMonthSubAR().GetModelGroupByCustomerIDAndYearAndMonth(strCustomerID, intYear);
