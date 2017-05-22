@@ -1,0 +1,100 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{3905D29F-E797-4BDE-8C54-F8E4D9361EF5}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ERPLibrary</RootNamespace>
+    <AssemblyName>ERPLibrary</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Common\Security.cs" />
+    <Compile Include="Common\SQLUnitAccount.cs" />
+    <Compile Include="Common\SQLUtil.cs" />
+    <Compile Include="DAL\DAddress.cs" />
+    <Compile Include="DAL\DBasketCustomer.cs" />
+    <Compile Include="DAL\DBasketSupplier.cs" />
+    <Compile Include="DAL\DCustomer.cs" />
+    <Compile Include="DAL\DCustomerLevel.cs" />
+    <Compile Include="DAL\DCustomerMonthSubAR.cs" />
+    <Compile Include="DAL\DCustomerSupplierForAccount.cs" />
+    <Compile Include="DAL\DCycleWorkItem.cs" />
+    <Compile Include="DAL\DDeliveryManPerformanceMonth.cs" />
+    <Compile Include="DAL\DMonthBasketCustomer.cs" />
+    <Compile Include="DAL\DMonthBasketSupplier.cs" />
+    <Compile Include="DAL\DMonthDebtCustomer.cs" />
+    <Compile Include="DAL\DMonthDebtSupplier.cs" />
+    <Compile Include="DAL\DPaymentProcess.cs" />
+    <Compile Include="DAL\DPrice.cs" />
+    <Compile Include="DAL\DPriceFuture.cs" />
+    <Compile Include="DAL\DPriceFutureProduct.cs" />
+    <Compile Include="DAL\DPriceGroup.cs" />
+    <Compile Include="DAL\DStat.cs" />
+    <Compile Include="DAL\DSummons.cs" />
+    <Compile Include="DAL\DSupplier.cs" />
+    <Compile Include="DAL\DSupplierMonthSubAP.cs" />
+    <Compile Include="DAL\DZIPCode.cs" />
+    <Compile Include="Models\MAddress.cs" />
+    <Compile Include="Models\MBasketCustomer.cs" />
+    <Compile Include="Models\MBasketSupplier.cs" />
+    <Compile Include="Models\MCustomer.cs" />
+    <Compile Include="Models\MCustomerLevel.cs" />
+    <Compile Include="Models\MCustomerMonthSubAR.cs" />
+    <Compile Include="Models\MCycleWorkItem.cs" />
+    <Compile Include="Models\MDeliveryManPerformanceMonth.cs" />
+    <Compile Include="Models\MMonthBasketCustomer.cs" />
+    <Compile Include="Models\MMonthBasketSupplier.cs" />
+    <Compile Include="Models\MMonthDebtCustomer.cs" />
+    <Compile Include="Models\MMonthDebtSupplier.cs" />
+    <Compile Include="Models\MPaymentProcess.cs" />
+    <Compile Include="Models\MPrice.cs" />
+    <Compile Include="Models\MPriceFuture.cs" />
+    <Compile Include="Models\MPriceFutureProduct.cs" />
+    <Compile Include="Models\MPriceGroup.cs" />
+    <Compile Include="Models\MSupplier.cs" />
+    <Compile Include="Models\MSupplierMonthSubAP.cs" />
+    <Compile Include="Models\MZIPCode.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

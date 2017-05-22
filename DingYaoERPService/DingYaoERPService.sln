@@ -1,0 +1,62 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ERPServiceTest", "ERPServiceTest\ERPServiceTest.csproj", "{697F20C1-50E0-4CA5-80CC-D266F8AA6B37}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ERPLibrary", "ERPLibrary\ERPLibrary.csproj", "{3905D29F-E797-4BDE-8C54-F8E4D9361EF5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DingYaoERPService", "DingYaoERPService\DingYaoERPService.csproj", "{CD68A810-9DF0-49E4-8EC2-CD785C7574CA}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "DingYaoERPSetUP", "DingYaoERPSetUP\DingYaoERPSetUP.vdproj", "{3C3EAC8D-5D77-4BB9-91AD-79E5E8A55F55}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|Mixed Platforms = Debug|Mixed Platforms
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|Mixed Platforms = Release|Mixed Platforms
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{697F20C1-50E0-4CA5-80CC-D266F8AA6B37}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{697F20C1-50E0-4CA5-80CC-D266F8AA6B37}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{697F20C1-50E0-4CA5-80CC-D266F8AA6B37}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{697F20C1-50E0-4CA5-80CC-D266F8AA6B37}.Debug|x86.ActiveCfg = Debug|x86
+		{697F20C1-50E0-4CA5-80CC-D266F8AA6B37}.Debug|x86.Build.0 = Debug|x86
+		{697F20C1-50E0-4CA5-80CC-D266F8AA6B37}.Release|Any CPU.ActiveCfg = Release|x86
+		{697F20C1-50E0-4CA5-80CC-D266F8AA6B37}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{697F20C1-50E0-4CA5-80CC-D266F8AA6B37}.Release|Mixed Platforms.Build.0 = Release|x86
+		{697F20C1-50E0-4CA5-80CC-D266F8AA6B37}.Release|x86.ActiveCfg = Release|x86
+		{697F20C1-50E0-4CA5-80CC-D266F8AA6B37}.Release|x86.Build.0 = Release|x86
+		{3905D29F-E797-4BDE-8C54-F8E4D9361EF5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3905D29F-E797-4BDE-8C54-F8E4D9361EF5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3905D29F-E797-4BDE-8C54-F8E4D9361EF5}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{3905D29F-E797-4BDE-8C54-F8E4D9361EF5}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{3905D29F-E797-4BDE-8C54-F8E4D9361EF5}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{3905D29F-E797-4BDE-8C54-F8E4D9361EF5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3905D29F-E797-4BDE-8C54-F8E4D9361EF5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3905D29F-E797-4BDE-8C54-F8E4D9361EF5}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{3905D29F-E797-4BDE-8C54-F8E4D9361EF5}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{3905D29F-E797-4BDE-8C54-F8E4D9361EF5}.Release|x86.ActiveCfg = Release|Any CPU
+		{CD68A810-9DF0-49E4-8EC2-CD785C7574CA}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{CD68A810-9DF0-49E4-8EC2-CD785C7574CA}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{CD68A810-9DF0-49E4-8EC2-CD785C7574CA}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{CD68A810-9DF0-49E4-8EC2-CD785C7574CA}.Debug|x86.ActiveCfg = Debug|x86
+		{CD68A810-9DF0-49E4-8EC2-CD785C7574CA}.Debug|x86.Build.0 = Debug|x86
+		{CD68A810-9DF0-49E4-8EC2-CD785C7574CA}.Release|Any CPU.ActiveCfg = Release|x86
+		{CD68A810-9DF0-49E4-8EC2-CD785C7574CA}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{CD68A810-9DF0-49E4-8EC2-CD785C7574CA}.Release|Mixed Platforms.Build.0 = Release|x86
+		{CD68A810-9DF0-49E4-8EC2-CD785C7574CA}.Release|x86.ActiveCfg = Release|x86
+		{CD68A810-9DF0-49E4-8EC2-CD785C7574CA}.Release|x86.Build.0 = Release|x86
+		{3C3EAC8D-5D77-4BB9-91AD-79E5E8A55F55}.Debug|Any CPU.ActiveCfg = Debug
+		{3C3EAC8D-5D77-4BB9-91AD-79E5E8A55F55}.Debug|Mixed Platforms.ActiveCfg = Debug
+		{3C3EAC8D-5D77-4BB9-91AD-79E5E8A55F55}.Debug|x86.ActiveCfg = Debug
+		{3C3EAC8D-5D77-4BB9-91AD-79E5E8A55F55}.Release|Any CPU.ActiveCfg = Release
+		{3C3EAC8D-5D77-4BB9-91AD-79E5E8A55F55}.Release|Mixed Platforms.ActiveCfg = Release
+		{3C3EAC8D-5D77-4BB9-91AD-79E5E8A55F55}.Release|x86.ActiveCfg = Release
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
