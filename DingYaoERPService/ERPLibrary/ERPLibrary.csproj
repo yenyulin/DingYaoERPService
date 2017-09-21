@@ -51,6 +51,7 @@
     <Compile Include="DAL\DCustomerMonthSubAR.cs" />
     <Compile Include="DAL\DCustomerSupplierForAccount.cs" />
     <Compile Include="DAL\DCycleWorkItem.cs" />
+    <Compile Include="DAL\DDayAccount.cs" />
     <Compile Include="DAL\DDeliveryManPerformanceMonth.cs" />
     <Compile Include="DAL\DMonthBasketCustomer.cs" />
     <Compile Include="DAL\DMonthBasketSupplier.cs" />
@@ -63,6 +64,7 @@
     <Compile Include="DAL\DPriceGroup.cs" />
     <Compile Include="DAL\DStat.cs" />
     <Compile Include="DAL\DSummons.cs" />
+    <Compile Include="DAL\DSummonsAccount.cs" />
     <Compile Include="DAL\DSupplier.cs" />
     <Compile Include="DAL\DSupplierMonthSubAP.cs" />
     <Compile Include="DAL\DZIPCode.cs" />
@@ -73,6 +75,7 @@
     <Compile Include="Models\MCustomerLevel.cs" />
     <Compile Include="Models\MCustomerMonthSubAR.cs" />
     <Compile Include="Models\MCycleWorkItem.cs" />
+    <Compile Include="Models\MDayAccount.cs" />
     <Compile Include="Models\MDeliveryManPerformanceMonth.cs" />
     <Compile Include="Models\MMonthBasketCustomer.cs" />
     <Compile Include="Models\MMonthBasketSupplier.cs" />
@@ -83,6 +86,8 @@
     <Compile Include="Models\MPriceFuture.cs" />
     <Compile Include="Models\MPriceFutureProduct.cs" />
     <Compile Include="Models\MPriceGroup.cs" />
+    <Compile Include="Models\MSummons.cs" />
+    <Compile Include="Models\MSummonsAccount.cs" />
     <Compile Include="Models\MSupplier.cs" />
     <Compile Include="Models\MSupplierMonthSubAP.cs" />
     <Compile Include="Models\MZIPCode.cs" />

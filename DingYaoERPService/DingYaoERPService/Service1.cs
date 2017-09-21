@@ -19,6 +19,8 @@ using NPOI.XSSF.UserModel;
 using System.IO;
 using System.Web;
 using System.Text.RegularExpressions;
+using NPOI.HSSF.UserModel;
+using NPOI.HSSF.Util;
 
 namespace DingYaoERPService
 {
@@ -86,12 +88,20 @@ namespace DingYaoERPService
                 SetPaymentProcess();
                 UpdateCustomerWeb();
             }
+            else if (e.SignalTime.ToString("HHmm") == "0130")
+            {
+                EventLog.WriteEntry("DingYaoERPServer", "產生會計傳票", EventLogEntryType.Information, 203);
+                UpdateAccountsSummonsAccounts();
+                //SetCycleWork();
+                //SetPaymentProcess();
+                //UpdateCustomerWeb();
+            }
             else if (e.SignalTime.ToString("HHmm") == "0200")
             {
                 //更新售價
                 UpdatePrice();
             }
-            else if (e.SignalTime.ToString("HHmm") == "0300")
+            else if (e.SignalTime.ToString("HHmm") == "0230")
             {
                
                 if (e.SignalTime.ToString("dd") == "01")
@@ -1388,6 +1398,280 @@ namespace DingYaoERPService
                 EventLog.WriteEntry("DingYaoERPServer", "司機績效月儲存更新錯誤" + ex.ToString(), EventLogEntryType.Warning, 408);
             }
         }
+        #endregion
+
+        
+
+        #region 會計傳票
+
+        public static string strFileURL = @"D:\Import\";
+
+        public string UpdateAccountsSummonsAccounts()
+        {
+            string strMsg = "";
+            try
+            {
+                //檢查FileURL
+                if (!System.IO.Directory.Exists(strFileURL))
+                {
+                    //建立目錄
+                    System.IO.Directory.CreateDirectory(strFileURL);
+                }
+
+
+                #region  會計傳票
+
+                //建立試算表
+                HSSFWorkbook workbook = new HSSFWorkbook();
+                ISheet sheet = workbook.CreateSheet("Sheet1");
+
+                #region 樣式設定
+
+
+                ICellStyle icsTitle = SetStyle(workbook, HorizontalAlignment.Center, HSSFColor.White.Index, HSSFColor.Black.Index, false, "新細明體", 22, "");
+                ICellStyle icsHeader = SetStyle(workbook, HorizontalAlignment.Center, 43, HSSFColor.Black.Index, false, "新細明體", 14, "", false, true);
+                ICellStyle icsTxtCenter = SetStyle(workbook, HorizontalAlignment.Center, HSSFColor.White.Index, HSSFColor.Black.Index, false, "新細明體", 12, "", true, true);
+
+
+                //設定欄位寬度
+                sheet.SetColumnWidth(0, 20 * 180);
+                sheet.SetColumnWidth(1, 20 * 180);
+                sheet.SetColumnWidth(2, 20 * 180);
+                sheet.SetColumnWidth(3, 20 * 180);
+                sheet.SetColumnWidth(4, 20 * 180);
+                sheet.SetColumnWidth(5, 20 * 180);
+                sheet.SetColumnWidth(6, 20 * 180);
+                sheet.SetColumnWidth(7, 20 * 300);
+                sheet.SetColumnWidth(8, 20 * 300);
+                sheet.SetColumnWidth(9, 20 * 180);
+                sheet.SetColumnWidth(10, 20 * 180);
+                sheet.SetColumnWidth(11, 20 * 180);
+                sheet.SetColumnWidth(12, 20 * 180);
+
+                IRow iRow = sheet.CreateRow(0);
+
+                #endregion
+
+                #region 第二行 header
+
+                IRow headerRow = sheet.CreateRow(0);
+
+
+                ICell cellHead0 = headerRow.CreateCell(0);
+                cellHead0.SetCellValue("年度");
+                cellHead0.CellStyle = icsHeader;
+
+                ICell cellHead1 = headerRow.CreateCell(1);
+                cellHead1.SetCellValue("傳票號碼");
+                cellHead1.CellStyle = icsHeader;
+
+                ICell cellHead2 = headerRow.CreateCell(2);
+                cellHead2.SetCellValue("傳票種類");
+                cellHead2.CellStyle = icsHeader;
+
+                ICell cellHead3 = headerRow.CreateCell(3);
+                cellHead3.SetCellValue("日期");
+                cellHead3.CellStyle = icsHeader;
+
+                ICell cellHead5 = headerRow.CreateCell(4);
+                cellHead5.SetCellValue("匯率");
+                cellHead5.CellStyle = icsHeader;
+
+                ICell cellHead8 = headerRow.CreateCell(5);
+                cellHead8.SetCellValue("序號");
+                cellHead8.CellStyle = icsHeader;
+
+                ICell cellHead9 = headerRow.CreateCell(6);
+                cellHead9.SetCellValue("科目代號");
+                cellHead9.CellStyle = icsHeader;
+
+                ICell cellHead12 = headerRow.CreateCell(7);
+                cellHead12.SetCellValue("借/貸");
+                cellHead12.CellStyle = icsHeader;
+
+                ICell cellHead13 = headerRow.CreateCell(8);
+                cellHead13.SetCellValue("金額");
+                cellHead13.CellStyle = icsHeader;
+
+                ICell cellHead21 = headerRow.CreateCell(9);
+                cellHead21.SetCellValue("外幣金額");
+                cellHead21.CellStyle = icsHeader;
+
+
+
+
+                #endregion
+
+                #region 資料行
+
+                int intTotalrow = 1;
+
+                int intUploadCount = 0;
+                DSummons dal = new DSummons();
+
+                List<MDayAccount> liDayAccount = new DDayAccount().GetByUnUpload();
+                foreach(MDayAccount mDayAccount in liDayAccount)
+                {
+                    string strDate = mDayAccount.DayAccountDate.ToString("yyyy/MM/dd");
+                    DataSet ds = dal.GetListNotUpLoad(strDate);
+                    foreach (DataRow dr in ds.Tables[0].Rows)
+                    {
+
+                        //年度
+                        string strYear = (Convert.ToInt32(Convert.ToDateTime(dr["SummonsDate"].ToString()).ToString("yyyy")) - 1911).ToString();
+                        string strSummonsDate = (Convert.ToInt32(Convert.ToDateTime(dr["SummonsDate"].ToString()).ToString("yyyy")) - 1911).ToString() + Convert.ToDateTime(dr["SummonsDate"].ToString()).ToString("MMdd");
+                        strYear = strYear.PadRight(4, ' ');
+                        strSummonsDate = strSummonsDate.PadRight(8, ' ');
+                        //傳票種類 固定三
+                        string strUmmonsType = "3";//傳票種類 固定3;
+
+                        int intCount = 1;
+
+                        DataSet dsAccounts = new DSummonsAccount().GetListBySummonsID2(dr["SummonsID"].ToString());
+                        foreach (DataRow drAccounts in dsAccounts.Tables[0].Rows)
+                        {
+                            iRow = sheet.CreateRow(intTotalrow);
+
+                            #region 內容
+
+                            //年度
+                            ICell cell = iRow.CreateCell(0);
+                            cell.SetCellValue(strYear);
+                            cell.CellStyle = icsTxtCenter;
+
+                            //傳票號碼
+                            cell = iRow.CreateCell(1);
+                            cell.SetCellValue(drAccounts["SummonsID"].ToString());
+                            cell.CellStyle = icsTxtCenter;
+
+                            //傳票種類
+                            cell = iRow.CreateCell(2);
+                            cell.SetCellValue(strUmmonsType);
+                            cell.CellStyle = icsTxtCenter;
+
+                            //日期
+                            cell = iRow.CreateCell(3);
+                            cell.SetCellValue(strSummonsDate);
+                            cell.CellStyle = icsTxtCenter;
+
+                            //匯率
+                            cell = iRow.CreateCell(4);
+                            cell.SetCellValue("1");
+                            cell.CellStyle = icsTxtCenter;
+
+                            //序號
+                            cell = iRow.CreateCell(5);
+                            cell.SetCellValue(intCount.ToString());
+                            cell.CellStyle = icsTxtCenter;
+
+                            //科目代號
+                            cell = iRow.CreateCell(6);
+                            cell.SetCellValue(drAccounts["AccountID"].ToString());
+                            cell.CellStyle = icsTxtCenter;
+
+                            //借/貸
+                            cell = iRow.CreateCell(7);
+                            cell.SetCellValue(drAccounts["DebitCredit"].ToString());
+                            cell.CellStyle = icsTxtCenter;
+
+                            //金額
+                            cell = iRow.CreateCell(8);
+                            cell.SetCellValue(drAccounts["SumMoney"].ToString());
+                            cell.CellStyle = icsTxtCenter;
+
+                            //外幣金額
+                            cell = iRow.CreateCell(9);
+                            cell.SetCellValue(drAccounts["SumMoney"].ToString());
+                            cell.CellStyle = icsTxtCenter;
+
+                            #endregion
+
+                            intCount++;
+                            intTotalrow++;
+                        }
+                        dal.EditUpload(dr["SummonsID"].ToString());
+                        intUploadCount++;
+                    }
+                    mDayAccount.Upload = true;
+                    new DDayAccount().Edit(mDayAccount);
+                }
+                
+
+                #endregion
+
+
+
+                FileStream file = new FileStream(strFileURL + "AccountingSummonsImport.xls", FileMode.Create);//產生檔案
+                workbook.Write(file);
+                file.Close();
+                #endregion
+
+
+                if (intUploadCount > 0)
+                {
+                    strMsg = "會計傳票上傳完成";
+                    //EventLog.WriteEntry("DingYaoERPServer", "會計傳票上傳完成", EventLogEntryType.Information, 210);
+                }
+            }
+            catch (Exception ex)
+            {
+                strMsg = ex.ToString();
+                //EventLog.WriteEntry("DingYaoERPServer", "會計傳票更新錯誤" + ex.ToString(), EventLogEntryType.Warning, 411);
+            }
+            return strMsg;
+        }
+
+        /// <summary>
+        /// 自訂樣式
+        /// </summary>
+        /// <param name="workbook">HSSFWorkbook</param>
+        /// <param name="hv">水平位置(靠左、置中、靠右)</param>
+        /// <param name="backgroundColor">背景顏色</param>
+        /// <param name="fontColor">字型顏色</param>
+        /// <param name="isBOLD">是否粗體</param>
+        /// <param name="strFontName">字體名稱</param>
+        /// <param name="fontSize">字體大小</param>
+        /// <param name="format">儲存格資料格式</param>
+        /// <param name="isWrap">是否自動換行</param>
+        /// <param name="isBorder">是否要框線</param>
+        /// <returns>儲存格樣式</returns>
+        public static ICellStyle SetStyle(HSSFWorkbook workbook, HorizontalAlignment hv, short backgroundColor, short fontColor, bool isBOLD, string strFontName, short fontSize, string format, bool isWrap = false, bool isBorder = false)
+        {
+            ICellStyle ics = workbook.CreateCellStyle();
+            ics.Alignment = hv;
+            ics.VerticalAlignment = VerticalAlignment.Center;
+            ics.WrapText = isWrap;
+            if (isBorder)
+            {
+                ics.BorderBottom = NPOI.SS.UserModel.BorderStyle.Thin;
+                ics.BorderLeft = NPOI.SS.UserModel.BorderStyle.Thin;
+                ics.BorderRight = NPOI.SS.UserModel.BorderStyle.Thin;
+                ics.BorderTop = NPOI.SS.UserModel.BorderStyle.Thin;
+            }
+            ics.BottomBorderColor = HSSFColor.Black.Index;
+            ics.LeftBorderColor = HSSFColor.Black.Index;
+            ics.RightBorderColor = HSSFColor.Black.Index;
+            ics.TopBorderColor = HSSFColor.Black.Index;
+            //ics.FillPattern = FillPattern.SolidForeground;(2.0.6.0版)
+            //ics.FillPattern = FillPatternType.SOLID_FOREGROUND;
+            ics.FillPattern = FillPattern.SolidForeground;
+            ics.FillBackgroundColor = backgroundColor;
+            ics.FillForegroundColor = backgroundColor;
+            IFont iFont = workbook.CreateFont();
+            iFont.FontHeightInPoints = fontSize;
+            iFont.Color = fontColor;
+            iFont.FontName = strFontName;
+            iFont.Boldweight = isBOLD ? (short)NPOI.SS.UserModel.FontBoldWeight.Bold : (short)NPOI.SS.UserModel.FontBoldWeight.Normal;
+            ics.SetFont(iFont);
+            if (format.Length > 0)
+            {
+                //ics.DataFormat = HSSFDataFormat.GetBuiltinFormat(format);
+                HSSFDataFormat HSSFformat = (HSSFDataFormat)workbook.CreateDataFormat();
+                ics.DataFormat = HSSFformat.GetFormat(format);
+            }
+            return ics;
+        }
+        
         #endregion
 
         /// <summary>

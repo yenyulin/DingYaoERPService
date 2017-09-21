@@ -18,6 +18,8 @@ using NPOI.XSSF.UserModel;
 using System.IO;
 using System.Web;
 using System.Text.RegularExpressions;
+using NPOI.HSSF.UserModel;
+using NPOI.HSSF.Util;
 
 namespace ERPServiceTest
 {
@@ -46,7 +48,7 @@ namespace ERPServiceTest
             {
                 //SetCycleWork();
                 //UpdateMonthRecord();
-                //UpdateAccountsSummonsAccounts();
+                UpdateAccountsSummonsAccounts();
                 //SetZipCode();
                 //SetCycleWork();
                 //SetPaymentProcess();
@@ -55,7 +57,7 @@ namespace ERPServiceTest
                 //SetDeliveryManPerformanceMonth(Convert.ToInt32(dt.Year),Convert.ToInt32(dt.Month));
 
                 //CreateCustomerAndSupplierExcel();
-                UpdateCustomerMonthSumMoneyAndPurchaseFrequency();
+                //UpdateCustomerMonthSumMoneyAndPurchaseFrequency();
                 //UpdateSupplierMonthSumMoneyAndPurchaseFrequency();
 
                 //SetDeliveryManPerformanceMonth();
@@ -693,232 +695,275 @@ namespace ERPServiceTest
 
         #region  上傳會計傳票
 
-        protected void UpdateAccountsSummonsAccounts()
+        #region 會計傳票
+
+        public static string strFileURL = @"D:\Import\";
+
+        public string UpdateAccountsSummonsAccounts()
         {
+            string strMsg = "";
             try
             {
-                //EventLog.WriteEntry("DingYaoERPServer", "上傳會計傳票", EventLogEntryType.Information, 203);
+                //檢查FileURL
+                if (!System.IO.Directory.Exists(strFileURL))
+                {
+                    //建立目錄
+                    System.IO.Directory.CreateDirectory(strFileURL);
+                }
+
+
+                #region  會計傳票
+
+                //建立試算表
+                HSSFWorkbook workbook = new HSSFWorkbook();
+                ISheet sheet = workbook.CreateSheet("Sheet1");
+
+                #region 樣式設定
+
+                ICellStyle icsTitle = SetStyle(workbook, NPOI.SS.UserModel.HorizontalAlignment.Center, HSSFColor.White.Index, HSSFColor.Black.Index, false, "新細明體", 22, "");
+                ICellStyle icsHeader = SetStyle(workbook, NPOI.SS.UserModel.HorizontalAlignment.Center, 43, HSSFColor.Black.Index, false, "新細明體", 14, "", false, true);
+                ICellStyle icsTxtCenter = SetStyle(workbook, NPOI.SS.UserModel.HorizontalAlignment.Center, HSSFColor.White.Index, HSSFColor.Black.Index, false, "新細明體", 12, "", true, true);
+
+                //設定欄位寬度
+                sheet.SetColumnWidth(0, 20 * 180);
+                sheet.SetColumnWidth(1, 20 * 180);
+                sheet.SetColumnWidth(2, 20 * 180);
+                sheet.SetColumnWidth(3, 20 * 180);
+                sheet.SetColumnWidth(4, 20 * 180);
+                sheet.SetColumnWidth(5, 20 * 180);
+                sheet.SetColumnWidth(6, 20 * 180);
+                sheet.SetColumnWidth(7, 20 * 300);
+                sheet.SetColumnWidth(8, 20 * 300);
+                sheet.SetColumnWidth(9, 20 * 180);
+                sheet.SetColumnWidth(10, 20 * 180);
+                sheet.SetColumnWidth(11, 20 * 180);
+                sheet.SetColumnWidth(12, 20 * 180);
+
+                IRow iRow = sheet.CreateRow(0);
+
+                #endregion
+
+                #region 第二行 header
+
+                IRow headerRow = sheet.CreateRow(0);
+
+
+                ICell cellHead0 = headerRow.CreateCell(0);
+                cellHead0.SetCellValue("年度");
+                cellHead0.CellStyle = icsHeader;
+
+                ICell cellHead1 = headerRow.CreateCell(1);
+                cellHead1.SetCellValue("傳票號碼");
+                cellHead1.CellStyle = icsHeader;
+
+                ICell cellHead2 = headerRow.CreateCell(2);
+                cellHead2.SetCellValue("傳票種類");
+                cellHead2.CellStyle = icsHeader;
+
+                ICell cellHead3 = headerRow.CreateCell(3);
+                cellHead3.SetCellValue("日期");
+                cellHead3.CellStyle = icsHeader;
+
+                ICell cellHead5 = headerRow.CreateCell(4);
+                cellHead5.SetCellValue("匯率");
+                cellHead5.CellStyle = icsHeader;
+
+                ICell cellHead8 = headerRow.CreateCell(5);
+                cellHead8.SetCellValue("序號");
+                cellHead8.CellStyle = icsHeader;
+
+                ICell cellHead9 = headerRow.CreateCell(6);
+                cellHead9.SetCellValue("科目代號");
+                cellHead9.CellStyle = icsHeader;
+
+                ICell cellHead12 = headerRow.CreateCell(7);
+                cellHead12.SetCellValue("借/貸");
+                cellHead12.CellStyle = icsHeader;
+
+                ICell cellHead13 = headerRow.CreateCell(8);
+                cellHead13.SetCellValue("金額");
+                cellHead13.CellStyle = icsHeader;
+
+                ICell cellHead21 = headerRow.CreateCell(9);
+                cellHead21.SetCellValue("外幣金額");
+                cellHead21.CellStyle = icsHeader;
+
+
+
+
+                #endregion
+
+                #region 資料行
+
+                int intTotalrow = 1;
 
                 int intUploadCount = 0;
                 DSummons dal = new DSummons();
-                DataSet ds = dal.GetListNotUpLoad();
-                foreach (DataRow dr in ds.Tables[0].Rows)
+
+                List<MDayAccount> liDayAccount = new DDayAccount().GetByUnUpload();
+                foreach (MDayAccount mDayAccount in liDayAccount)
                 {
-
-                    DataSet dsAccounts=dal.GetListBySummonsID(dr["SummonsID"].ToString());
-
-                    #region  會計傳票
-                    
-
-                    StringBuilder sbSummons = new StringBuilder();
-
-                    sbSummons.Append("insert into [WD4MFGLA] ([MFGL001],[MFGL002],[MFGL003],[MFGL004]");
-                    sbSummons.Append(",[MFGL005],[MFGL006],[MFGL007],[MFGL008],[MFGL009]");
-                    sbSummons.Append(",[MFGL010],[MFGL011],[MFGL012],[MFGL013],[MFGL014]");
-                    sbSummons.Append(",[MFGL015],[MFGL016],[MFGL017],[MFGL018],[MFGL019]");
-                    sbSummons.Append(",[MFGL020],[MFGL021],[MFGL022],[MFGL023],[MFGL024]");
-                    sbSummons.Append(",[MFGL801],[MFGL802],[MFGL803],[MFGL804],[MFGL805]");
-                    sbSummons.Append(",[MFGL806],[MFGL807],[MFGL808],[MFGL809],[MFGL810]");
-                    sbSummons.Append(",[MFGL811],[MFGL812],[MFGL821],[MFGL822],[MFGL980]");
-                    sbSummons.Append(",[MFGL982],[MFGL983],[MFGL984],[MFGL985],[MFGL986]");
-                    sbSummons.Append(",[MFGL987],[MFGL988],[MFGL989],[MFGL900])");
-                    sbSummons.Append("values (@MFGL001,@MFGL002,@MFGL003,@MFGL004");
-                    sbSummons.Append(",@MFGL005,@MFGL006,@MFGL007,@MFGL008,@MFGL009");
-                    sbSummons.Append(",@MFGL010,@MFGL011,@MFGL012,@MFGL013,@MFGL014");
-                    sbSummons.Append(",@MFGL015,@MFGL016,@MFGL017,@MFGL018,@MFGL019");
-                    sbSummons.Append(",@MFGL020,@MFGL021,@MFGL022,@MFGL023,@MFGL024");
-                    sbSummons.Append(",@MFGL801,@MFGL802,@MFGL803,@MFGL804,@MFGL805");
-                    sbSummons.Append(",@MFGL806,@MFGL807,@MFGL808,@MFGL809,@MFGL810");
-                    sbSummons.Append(",@MFGL811,@MFGL812,@MFGL821,@MFGL822,@MFGL980");
-                    sbSummons.Append(",@MFGL982,@MFGL983,@MFGL984,@MFGL985,@MFGL986");
-                    sbSummons.Append(",@MFGL987,@MFGL988,@MFGL989,@MFGL900)");
-
-
-                    //年度
-                    string strYear = (Convert.ToInt32(Convert.ToDateTime(dr["CreateDate"].ToString()).ToString("yyyy")) - 1911).ToString();
-
-                    //傳票種類 固定三
-                    string strUmmonsType = "3";//傳票種類 固定3;
-
-                    SqlCommand cmd = new SqlCommand(sbSummons.ToString());
-                    cmd.Parameters.Add("@MFGL001", SqlDbType.VarChar).Value = dr["SummonsID"].ToString();
-                    cmd.Parameters.Add("@MFGL002", SqlDbType.VarChar).Value = strYear;
-                    cmd.Parameters.Add("@MFGL003", SqlDbType.VarChar).Value = dr["SummonsID"].ToString();
-                    cmd.Parameters.Add("@MFGL004", SqlDbType.VarChar).Value = strUmmonsType;
-                    cmd.Parameters.Add("@MFGL005", SqlDbType.Float).Value = DBNull.Value;//這部份要確認
-                    cmd.Parameters.Add("@MFGL006", SqlDbType.VarChar).Value = "";
-                    cmd.Parameters.Add("@MFGL007", SqlDbType.VarChar).Value = "";
-                    cmd.Parameters.Add("@MFGL008", SqlDbType.Float).Value = 1;//匯率
-                    cmd.Parameters.Add("@MFGL009", SqlDbType.VarChar).Value = "N";
-                    cmd.Parameters.Add("@MFGL010", SqlDbType.VarChar).Value = DBNull.Value;
-                    cmd.Parameters.Add("@MFGL011", SqlDbType.DateTime).Value = Convert.ToDateTime(dr["CreateDate"].ToString());//建立時間
-                    cmd.Parameters.Add("@MFGL012", SqlDbType.VarChar).Value = dr["CreateUser"].ToString();//建立人員
-                    cmd.Parameters.Add("@MFGL013", SqlDbType.DateTime).Value = Convert.ToDateTime(dr["UpdateDate"].ToString()); ;//更新時間
-                    cmd.Parameters.Add("@MFGL014", SqlDbType.VarChar).Value = dr["UpdateUser"].ToString(); ;//更新人員
-                    cmd.Parameters.Add("@MFGL015", SqlDbType.Int).Value = DBNull.Value;
-                    cmd.Parameters.Add("@MFGL016", SqlDbType.VarChar).Value = DBNull.Value;
-                    cmd.Parameters.Add("@MFGL017", SqlDbType.VarChar).Value = "TR";//來源別 TR:總帳
-                    cmd.Parameters.Add("@MFGL018", SqlDbType.SmallInt).Value = 0;//附件數
-                    cmd.Parameters.Add("@MFGL019", SqlDbType.VarChar).Value = "SF";//來源單別: SF 自行輸入
-                    cmd.Parameters.Add("@MFGL020", SqlDbType.VarChar).Value = DBNull.Value;
-                    cmd.Parameters.Add("@MFGL021", SqlDbType.DateTime).Value = DBNull.Value;
-                    cmd.Parameters.Add("@MFGL022", SqlDbType.VarChar).Value = "";
-                    cmd.Parameters.Add("@MFGL023", SqlDbType.VarChar).Value = "N";
-                    cmd.Parameters.Add("@MFGL024", SqlDbType.VarChar).Value = DBNull.Value;
-                    cmd.Parameters.Add("@MFGL801", SqlDbType.VarChar).Value = "";
-                    cmd.Parameters.Add("@MFGL802", SqlDbType.VarChar).Value = "";
-                    cmd.Parameters.Add("@MFGL803", SqlDbType.VarChar).Value = "";
-                    cmd.Parameters.Add("@MFGL804", SqlDbType.VarChar).Value = "";
-                    cmd.Parameters.Add("@MFGL805", SqlDbType.VarChar).Value = "";
-                    cmd.Parameters.Add("@MFGL806", SqlDbType.Float).Value = 0;
-                    cmd.Parameters.Add("@MFGL807", SqlDbType.Float).Value = 0;
-                    cmd.Parameters.Add("@MFGL808", SqlDbType.Float).Value = 0;
-                    cmd.Parameters.Add("@MFGL809", SqlDbType.Float).Value = 0;
-                    cmd.Parameters.Add("@MFGL810", SqlDbType.Float).Value = 0;
-                    cmd.Parameters.Add("@MFGL811", SqlDbType.DateTime).Value = DBNull.Value;
-                    cmd.Parameters.Add("@MFGL812", SqlDbType.DateTime).Value = DBNull.Value;
-                    cmd.Parameters.Add("@MFGL821", SqlDbType.VarChar).Value = DBNull.Value;
-                    cmd.Parameters.Add("@MFGL822", SqlDbType.VarChar).Value = DBNull.Value;
-                    cmd.Parameters.Add("@MFGL980", SqlDbType.Image).Value = DBNull.Value;
-                    cmd.Parameters.Add("@MFGL982", SqlDbType.VarChar).Value = DBNull.Value;
-                    cmd.Parameters.Add("@MFGL983", SqlDbType.DateTime).Value = DBNull.Value;
-                    cmd.Parameters.Add("@MFGL984", SqlDbType.VarChar).Value = DBNull.Value;
-                    cmd.Parameters.Add("@MFGL985", SqlDbType.DateTime).Value = DBNull.Value;
-                    cmd.Parameters.Add("@MFGL986", SqlDbType.VarChar).Value = DBNull.Value;
-                    cmd.Parameters.Add("@MFGL987", SqlDbType.DateTime).Value = DBNull.Value;
-                    cmd.Parameters.Add("@MFGL988", SqlDbType.VarChar).Value = DBNull.Value;
-                    cmd.Parameters.Add("@MFGL989", SqlDbType.DateTime).Value = DBNull.Value;
-                    cmd.Parameters.Add("@MFGL900", SqlDbType.VarChar).Value = "0";
-                    cmd.CommandType = CommandType.Text;
-                    SQLUnitAccount.ExecuteSql(cmd);
-
-                    #endregion
-                    //insert into TB_IDCode values(@ID,@Code)
-                    //WD4MFGLA 傳票
-                   
-                    int intCount=1;
-                    #region  會計科目
-                    foreach (DataRow drAccounts in dsAccounts.Tables[0].Rows)
+                    string strDate = mDayAccount.DayAccountDate.ToString("yyyy/MM/dd");
+                    DataSet ds = dal.GetListNotUpLoad(strDate);
+                    foreach (DataRow dr in ds.Tables[0].Rows)
                     {
-                        //WD4DTGLA 會計科目
 
-                        StringBuilder sbSummonsAccount = new StringBuilder();
-                        
-                        //sbSummonsAccount.Append("insert into [WD4DTGLA]  values (@DTGL001,@DTGL002,@DTGL003,@DTGL004");
-                        //sbSummonsAccount.Append(",@DTGL005,@DTGL006,@DTGL007,@DTGL008,@DTGL009");
-                        //sbSummonsAccount.Append(",@DTGL010,@DTGL011,@DTGL012,@DTGL013,@DTGL014");
-                        //sbSummonsAccount.Append(",@DTGL015,@DTGL016,@DTGL017,@DTGL018,@DTGL019");
-                        //sbSummonsAccount.Append(",@DTGL020,@DTGL021,@DTGL022,@DTGL023,@DTGL024");
-                        //sbSummonsAccount.Append(",@DTGL025,@DTGL026,@DTGL027,@DTGL028,@DTGL029");
-                        //sbSummonsAccount.Append(",@DTGL030,@DTGL031,@DTGL032,@DTGL033,@DTGL034");
-                        //sbSummonsAccount.Append(",@DTGL801,@DTGL802,@DTGL803,@DTGL804,@DTGL805");
-                        //sbSummonsAccount.Append(",@DTGL806,@DTGL807,@DTGL808,@DTGL809,@DTGL810");
-                        //sbSummonsAccount.Append(",@DTGL811,@DTGL812,@DTGL900)");
+                        //年度
+                        string strYear = (Convert.ToInt32(Convert.ToDateTime(dr["SummonsDate"].ToString()).ToString("yyyy")) - 1911).ToString();
+                        string strSummonsDate = (Convert.ToInt32(Convert.ToDateTime(dr["SummonsDate"].ToString()).ToString("yyyy")) - 1911).ToString() + Convert.ToDateTime(dr["SummonsDate"].ToString()).ToString("MMdd");
+                        strYear = strYear.PadRight(4, ' ');
+                        strSummonsDate = strSummonsDate.PadRight(8, ' ');
+                        //傳票種類 固定三
+                        string strUmmonsType = "3";//傳票種類 固定3;
 
+                        int intCount = 1;
 
-                        sbSummonsAccount.Append("insert into [WD4DTGLA] ([DTGL001],[DTGL002],[DTGL003],[DTGL004]");
-                        sbSummonsAccount.Append(",[DTGL005],[DTGL006],[DTGL007],[DTGL008],[DTGL009]");
-                        sbSummonsAccount.Append(",[DTGL010],[DTGL011],[DTGL012],[DTGL013],[DTGL014]");
-                        sbSummonsAccount.Append(",[DTGL015],[DTGL016],[DTGL017],[DTGL018],[DTGL019]");
-                        sbSummonsAccount.Append(",[DTGL020],[DTGL021],[DTGL022],[DTGL023],[DTGL024]");
-                        sbSummonsAccount.Append(",[DTGL025],[DTGL026],[DTGL027],[DTGL028],[DTGL029]");
-                        sbSummonsAccount.Append(",[DTGL030],[DTGL031],[DTGL032],[DTGL033],[DTGL034]");
-                        sbSummonsAccount.Append(",[DTGL801],[DTGL802],[DTGL803],[DTGL804],[DTGL805]");
-                        sbSummonsAccount.Append(",[DTGL806],[DTGL807],[DTGL808],[DTGL809],[DTGL810]");
-                        sbSummonsAccount.Append(",[DTGL811],[DTGL812],[DTGL900])");
-                        sbSummonsAccount.Append("values (@DTGL001,@DTGL002,@DTGL003,@DTGL004");
-                        sbSummonsAccount.Append(",@DTGL005,@DTGL006,@DTGL007,@DTGL008,@DTGL009");
-                        sbSummonsAccount.Append(",@DTGL010,@DTGL011,@DTGL012,@DTGL013,@DTGL014");
-                        sbSummonsAccount.Append(",@DTGL015,@DTGL016,@DTGL017,@DTGL018,@DTGL019");
-                        sbSummonsAccount.Append(",@DTGL020,@DTGL021,@DTGL022,@DTGL023,@DTGL024");
-                        sbSummonsAccount.Append(",@DTGL025,@DTGL026,@DTGL027,@DTGL028,@DTGL029");
-                        sbSummonsAccount.Append(",@DTGL030,@DTGL031,@DTGL032,@DTGL033,@DTGL034");
-                        sbSummonsAccount.Append(",@DTGL801,@DTGL802,@DTGL803,@DTGL804,@DTGL805");
-                        sbSummonsAccount.Append(",@DTGL806,@DTGL807,@DTGL808,@DTGL809,@DTGL810");
-                        sbSummonsAccount.Append(",@DTGL811,@DTGL812,@DTGL900)");
-                        SqlCommand cmd2 = new SqlCommand(sbSummonsAccount.ToString());
+                        DataSet dsAccounts = new DSummonsAccount().GetListBySummonsID2(dr["SummonsID"].ToString());
+                        foreach (DataRow drAccounts in dsAccounts.Tables[0].Rows)
+                        {
+                            iRow = sheet.CreateRow(intTotalrow);
 
+                            #region 內容
 
-                        string strCount = intCount.ToString().PadLeft(4, '0');
-                        cmd2.Parameters.Add("@DTGL001", SqlDbType.VarChar).Value = drAccounts["SummonsID"].ToString() + "-" + intCount.ToString();
-                        cmd2.Parameters.Add("@DTGL002", SqlDbType.VarChar).Value = drAccounts["SummonsID"].ToString();
-                        cmd2.Parameters.Add("@DTGL003", SqlDbType.VarChar).Value = strYear;
-                        cmd2.Parameters.Add("@DTGL004", SqlDbType.VarChar).Value = drAccounts["SummonsID"].ToString();
-                        cmd2.Parameters.Add("@DTGL005", SqlDbType.VarChar).Value = strCount; //序號(seq
-                        cmd2.Parameters.Add("@DTGL006", SqlDbType.VarChar).Value = strUmmonsType;
-                        cmd2.Parameters.Add("@DTGL007", SqlDbType.Float).Value = DBNull.Value;//42190 奇怪的
-                        cmd2.Parameters.Add("@DTGL008", SqlDbType.VarChar).Value = drAccounts["AccountID"].ToString();
-                        cmd2.Parameters.Add("@DTGL009", SqlDbType.VarChar).Value = "";//客戶編號(可不填)
-                        cmd2.Parameters.Add("@DTGL010", SqlDbType.VarChar).Value = "";
-                        cmd2.Parameters.Add("@DTGL011", SqlDbType.VarChar).Value = drAccounts["Summary"].ToString();
-                        cmd2.Parameters.Add("@DTGL012", SqlDbType.VarChar).Value = drAccounts["DebitCredit"].ToString();// 借:1 貸:2
-                        cmd2.Parameters.Add("@DTGL013", SqlDbType.Float).Value = Convert.ToDouble(drAccounts["SumMoney"].ToString());//金額
-                        cmd2.Parameters.Add("@DTGL014", SqlDbType.VarChar).Value = "";
-                        cmd2.Parameters.Add("@DTGL015", SqlDbType.VarChar).Value = "";
-                        cmd2.Parameters.Add("@DTGL016", SqlDbType.VarChar).Value = "";
-                        cmd2.Parameters.Add("@DTGL017", SqlDbType.VarChar).Value = "";
-                        cmd2.Parameters.Add("@DTGL018", SqlDbType.VarChar).Value = "";
-                        cmd2.Parameters.Add("@DTGL019", SqlDbType.VarChar).Value = "N";//立沖否
-                        cmd2.Parameters.Add("@DTGL020", SqlDbType.VarChar).Value = DBNull.Value;
-                        cmd2.Parameters.Add("@DTGL021", SqlDbType.Float).Value = Convert.ToDouble(drAccounts["SumMoney"].ToString()); ;
-                        cmd2.Parameters.Add("@DTGL022", SqlDbType.VarChar).Value = DBNull.Value;
-                        cmd2.Parameters.Add("@DTGL023", SqlDbType.VarChar).Value = DBNull.Value;
-                        cmd2.Parameters.Add("@DTGL024", SqlDbType.VarChar).Value = DBNull.Value;
-                        cmd2.Parameters.Add("@DTGL025", SqlDbType.VarChar).Value = DBNull.Value;
-                        cmd2.Parameters.Add("@DTGL026", SqlDbType.VarChar).Value = "N";
-                        cmd2.Parameters.Add("@DTGL027", SqlDbType.VarChar).Value = "";
-                        cmd2.Parameters.Add("@DTGL028", SqlDbType.Float).Value = 1;
-                        cmd2.Parameters.Add("@DTGL029", SqlDbType.VarChar).Value = "";
-                        cmd2.Parameters.Add("@DTGL030", SqlDbType.VarChar).Value = DBNull.Value;
-                        cmd2.Parameters.Add("@DTGL031", SqlDbType.VarChar).Value = "";
-                        cmd2.Parameters.Add("@DTGL032", SqlDbType.VarChar).Value = DBNull.Value;
-                        cmd2.Parameters.Add("@DTGL033", SqlDbType.VarChar).Value = "";
-                        cmd2.Parameters.Add("@DTGL034", SqlDbType.VarChar).Value = "";
-                        cmd2.Parameters.Add("@DTGL801", SqlDbType.VarChar).Value = "";
-                        cmd2.Parameters.Add("@DTGL802", SqlDbType.VarChar).Value = "";
-                        cmd2.Parameters.Add("@DTGL803", SqlDbType.VarChar).Value = "";
-                        cmd2.Parameters.Add("@DTGL804", SqlDbType.VarChar).Value = "";
-                        cmd2.Parameters.Add("@DTGL805", SqlDbType.VarChar).Value = "";
-                        cmd2.Parameters.Add("@DTGL806", SqlDbType.Float).Value = 0;
-                        cmd2.Parameters.Add("@DTGL807", SqlDbType.Float).Value = 0;
-                        cmd2.Parameters.Add("@DTGL808", SqlDbType.Float).Value = 0;
-                        cmd2.Parameters.Add("@DTGL809", SqlDbType.Float).Value = 0;
-                        cmd2.Parameters.Add("@DTGL810", SqlDbType.Float).Value = 0;
-                        cmd2.Parameters.Add("@DTGL811", SqlDbType.DateTime).Value = DBNull.Value;
-                        cmd2.Parameters.Add("@DTGL812", SqlDbType.DateTime).Value = DBNull.Value;
-                        cmd2.Parameters.Add("@DTGL900", SqlDbType.VarChar).Value = 0;
-                        SQLUnitAccount.ExecuteSql(cmd2);
+                            //年度
+                            ICell cell = iRow.CreateCell(0);
+                            cell.SetCellValue(strYear);
+                            cell.CellStyle = icsTxtCenter;
 
+                            //傳票號碼
+                            cell = iRow.CreateCell(1);
+                            cell.SetCellValue(drAccounts["SummonsID"].ToString());
+                            cell.CellStyle = icsTxtCenter;
 
-                        intCount++;
-                        //insert into [WD4DTGLA] ([DTGL001],[DTGL002],[DTGL003],[DTGL004]
-                        //,[DTGL005],[DTGL006],[DTGL007],[DTGL008],[DTGL009]
-                        //,[DTGL010],[DTGL011],[DTGL012],[DTGL013],[DTGL014]
-                        //,[DTGL015],[DTGL016],[DTGL017],[DTGL018],[DTGL019]
-                        //,[DTGL020],[DTGL021],[DTGL022],[DTGL023],[DTGL024]
-                        //,[DTGL025],[DTGL026],[DTGL027],[DTGL028],[DTGL029]
-                        //,[DTGL030],[DTGL031],[DTGL032],[DTGL033],[DTGL034]
-                        //,[DTGL801],[DTGL802],[DTGL803],[DTGL804],[DTGL805]
-                        //,[DTGL806],[DTGL807],[DTGL808],[DTGL809],[DTGL810]
-                        //,[DTGL811],[DTGL812],[DTGL900])
+                            //傳票種類
+                            cell = iRow.CreateCell(2);
+                            cell.SetCellValue(strUmmonsType);
+                            cell.CellStyle = icsTxtCenter;
 
+                            //日期
+                            cell = iRow.CreateCell(3);
+                            cell.SetCellValue(strSummonsDate);
+                            cell.CellStyle = icsTxtCenter;
+
+                            //匯率
+                            cell = iRow.CreateCell(4);
+                            cell.SetCellValue("1");
+                            cell.CellStyle = icsTxtCenter;
+
+                            //序號
+                            cell = iRow.CreateCell(5);
+                            cell.SetCellValue(intCount.ToString());
+                            cell.CellStyle = icsTxtCenter;
+
+                            //科目代號
+                            cell = iRow.CreateCell(6);
+                            cell.SetCellValue(drAccounts["AccountID"].ToString());
+                            cell.CellStyle = icsTxtCenter;
+
+                            //借/貸
+                            cell = iRow.CreateCell(7);
+                            cell.SetCellValue(drAccounts["DebitCredit"].ToString());
+                            cell.CellStyle = icsTxtCenter;
+
+                            //金額
+                            cell = iRow.CreateCell(8);
+                            cell.SetCellValue(drAccounts["SumMoney"].ToString());
+                            cell.CellStyle = icsTxtCenter;
+
+                            //外幣金額
+                            cell = iRow.CreateCell(9);
+                            cell.SetCellValue(drAccounts["SumMoney"].ToString());
+                            cell.CellStyle = icsTxtCenter;
+
+                            #endregion
+                            intCount++;
+                            intTotalrow++;
+                        }
+                        dal.EditUpload(dr["SummonsID"].ToString());
+                        intUploadCount++;
                     }
-
-                    #endregion
-                    //最後更新為已上傳
-                    dal.EditUpload(dr["SummonsID"].ToString());
+                    mDayAccount.Upload = true;
+                    new DDayAccount().Edit(mDayAccount);
                 }
+
+
+                #endregion
+
+
+
+                FileStream file = new FileStream(strFileURL + "AccountingSummonsImport.xls", FileMode.Create);//產生檔案
+                workbook.Write(file);
+                file.Close();
+                #endregion
+
+
                 if (intUploadCount > 0)
                 {
+                    strMsg = "會計傳票上傳完成";
                     //EventLog.WriteEntry("DingYaoERPServer", "會計傳票上傳完成", EventLogEntryType.Information, 210);
                 }
             }
             catch (Exception ex)
             {
+                strMsg = ex.ToString();
                 //EventLog.WriteEntry("DingYaoERPServer", "會計傳票更新錯誤" + ex.ToString(), EventLogEntryType.Warning, 411);
             }
-            
+            return strMsg;
         }
+
+
+        /// <summary>
+        /// 自訂樣式
+        /// </summary>
+        /// <param name="workbook">HSSFWorkbook</param>
+        /// <param name="hv">水平位置(靠左、置中、靠右)</param>
+        /// <param name="backgroundColor">背景顏色</param>
+        /// <param name="fontColor">字型顏色</param>
+        /// <param name="isBOLD">是否粗體</param>
+        /// <param name="strFontName">字體名稱</param>
+        /// <param name="fontSize">字體大小</param>
+        /// <param name="format">儲存格資料格式</param>
+        /// <param name="isWrap">是否自動換行</param>
+        /// <param name="isBorder">是否要框線</param>
+        /// <returns>儲存格樣式</returns>
+        public static ICellStyle SetStyle(HSSFWorkbook workbook, NPOI.SS.UserModel.HorizontalAlignment hv, short backgroundColor, short fontColor, bool isBOLD, string strFontName, short fontSize, string format, bool isWrap = false, bool isBorder = false)
+        {
+            ICellStyle ics = workbook.CreateCellStyle();
+            ics.Alignment = hv;
+            ics.VerticalAlignment = VerticalAlignment.Center;
+            ics.WrapText = isWrap;
+            if (isBorder)
+            {
+                ics.BorderBottom = NPOI.SS.UserModel.BorderStyle.Thin;
+                ics.BorderLeft = NPOI.SS.UserModel.BorderStyle.Thin;
+                ics.BorderRight = NPOI.SS.UserModel.BorderStyle.Thin;
+                ics.BorderTop = NPOI.SS.UserModel.BorderStyle.Thin;
+            }
+            ics.BottomBorderColor = HSSFColor.Black.Index;
+            ics.LeftBorderColor = HSSFColor.Black.Index;
+            ics.RightBorderColor = HSSFColor.Black.Index;
+            ics.TopBorderColor = HSSFColor.Black.Index;
+            //ics.FillPattern = FillPattern.SolidForeground;(2.0.6.0版)
+            //ics.FillPattern = FillPatternType.SOLID_FOREGROUND;
+            ics.FillPattern = FillPattern.SolidForeground;
+            ics.FillBackgroundColor = backgroundColor;
+            ics.FillForegroundColor = backgroundColor;
+            IFont iFont = workbook.CreateFont();
+            iFont.FontHeightInPoints = fontSize;
+            iFont.Color = fontColor;
+            iFont.FontName = strFontName;
+            iFont.Boldweight = isBOLD ? (short)NPOI.SS.UserModel.FontBoldWeight.Bold : (short)NPOI.SS.UserModel.FontBoldWeight.Normal;
+            ics.SetFont(iFont);
+            if (format.Length > 0)
+            {
+                //ics.DataFormat = HSSFDataFormat.GetBuiltinFormat(format);
+                HSSFDataFormat HSSFformat = (HSSFDataFormat)workbook.CreateDataFormat();
+                ics.DataFormat = HSSFformat.GetFormat(format);
+            }
+            return ics;
+        }
+
+        #endregion
 
 
         #endregion
