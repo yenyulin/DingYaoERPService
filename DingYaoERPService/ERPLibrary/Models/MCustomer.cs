@@ -13,7 +13,7 @@ namespace DingYaoERP.Models
         /// 客戶代碼
         /// </summary>
         public string CustomerID { get; set; }
-              
+
 
         /// <summary>
         /// 總公司代碼
@@ -81,7 +81,7 @@ namespace DingYaoERP.Models
         public bool UniformInvoice { get; set; }
 
         /// <summary>
-        /// 發票條件
+        /// 明細條件
         /// </summary>
         public string UnifynoMethod { get; set; }
 
@@ -89,6 +89,16 @@ namespace DingYaoERP.Models
         /// 發票備註
         /// </summary>
         public string UnifynoRemarks { get; set; }
+
+        /// <summary>
+        /// 發票條件
+        /// </summary>
+        public string InvoiceType { get; set; }
+
+        /// <summary>
+        /// 是否批次列印發票
+        /// </summary>
+        public bool InvoiceBatchPrint { get; set; }
 
         /// <summary>
         /// 是否列印發票明細

@@ -42,6 +42,8 @@ namespace DingYaoERP.DAL
             cmd.Parameters.Add("@UniformInvoice", SqlDbType.Bit).Value = mod.UniformInvoice;
             cmd.Parameters.Add("@UnifynoMethod", SqlDbType.NVarChar).Value = mod.UnifynoMethod;
             cmd.Parameters.Add("@UnifynoRemarks", SqlDbType.NVarChar).Value = mod.UnifynoRemarks;
+            cmd.Parameters.Add("@InvoiceType", SqlDbType.NVarChar).Value = mod.InvoiceType;
+            cmd.Parameters.Add("@InvoiceBatchPrint", SqlDbType.Bit).Value = mod.InvoiceBatchPrint;
             cmd.Parameters.Add("@UnifynoDetail", SqlDbType.Bit).Value = mod.UnifynoDetail;
             cmd.Parameters.Add("@PaymentTermsID", SqlDbType.Int).Value = mod.PaymentTermsID;
             cmd.Parameters.Add("@PaymentTerms", SqlDbType.NVarChar).Value = mod.PaymentTerms;
@@ -119,6 +121,8 @@ namespace DingYaoERP.DAL
             cmd.Parameters.Add("@UniformInvoice", SqlDbType.Bit).Value = mod.UniformInvoice;
             cmd.Parameters.Add("@UnifynoMethod", SqlDbType.NVarChar).Value = mod.UnifynoMethod;
             cmd.Parameters.Add("@UnifynoRemarks", SqlDbType.NVarChar).Value = mod.UnifynoRemarks;
+            cmd.Parameters.Add("@InvoiceType", SqlDbType.NVarChar).Value = mod.InvoiceType;
+            cmd.Parameters.Add("@InvoiceBatchPrint", SqlDbType.Bit).Value = mod.InvoiceBatchPrint;
             cmd.Parameters.Add("@UnifynoDetail", SqlDbType.Bit).Value = mod.UnifynoDetail;
             cmd.Parameters.Add("@PaymentTermsID", SqlDbType.Int).Value = mod.PaymentTermsID;
             cmd.Parameters.Add("@PaymentTerms", SqlDbType.NVarChar).Value = mod.PaymentTerms;
@@ -235,6 +239,8 @@ namespace DingYaoERP.DAL
                 mod.UniformInvoice = bool.Parse(dr["UniformInvoice"].ToString());
                 mod.UnifynoMethod = dr["UnifynoMethod"].ToString();
                 mod.UnifynoRemarks = dr["UnifynoRemarks"].ToString();
+                mod.InvoiceType = dr["InvoiceType"].ToString();
+                mod.InvoiceBatchPrint = bool.Parse(dr["InvoiceBatchPrint"].ToString());
                 mod.UnifynoDetail = bool.Parse(dr["UnifynoDetail"].ToString());
                 mod.PaymentTermsID = int.Parse(dr["PaymentTermsID"].ToString());
                 mod.PaymentTerms = dr["PaymentTerms"].ToString();
@@ -309,6 +315,8 @@ namespace DingYaoERP.DAL
             mod.UniformInvoice = bool.Parse(dr["UniformInvoice"].ToString());
             mod.UnifynoMethod = dr["UnifynoMethod"].ToString();
             mod.UnifynoRemarks = dr["UnifynoRemarks"].ToString();
+            mod.InvoiceType = dr["InvoiceType"].ToString();
+            mod.InvoiceBatchPrint = bool.Parse(dr["InvoiceBatchPrint"].ToString());
             mod.UnifynoDetail = bool.Parse(dr["UnifynoDetail"].ToString());
             mod.PaymentTermsID = int.Parse(dr["PaymentTermsID"].ToString());
             mod.PaymentTerms = dr["PaymentTerms"].ToString();
@@ -389,7 +397,55 @@ namespace DingYaoERP.DAL
             return Convert.ToInt32(SQLUtil.ExecuteScalar(cmd));
         }
 
-       
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="strCustomerID"></param>
+        /// <returns></returns>
+        public DataSet GetListLetterByCustomerIDS(string strCustomerIDS)
+        {
+            SqlCommand cmd = new SqlCommand();
+            StringBuilder sbTSQL = new StringBuilder();
+            cmd.CommandType = CommandType.Text;
+
+            sbTSQL.Append(" select a.*,AddressInfo,ContactsInfo,d.UserName from VW_Customer a left join  ");
+            sbTSQL.Append(" ( ");
+            sbTSQL.Append(" 	select CustomerID  ");
+            sbTSQL.Append(" 		,AddressInfo=STUFF(cast(  ");
+            sbTSQL.Append(" 		(  ");
+            sbTSQL.Append(" 			SELECT '**********'+a.ZIPCode+City+Area+Address from TB_Address a left join TB_ZipCode z on substring(a.ZipCode,0,4)=z.ZipCode  ");
+            sbTSQL.Append(" 			where a.CustomerID= c.CustomerID FOR XML PATH('')  ");
+            sbTSQL.Append(" 		) as nvarchar(1000)  ");
+            sbTSQL.Append(" 	) ,1,10,'')  ");
+            sbTSQL.Append(" 	from TB_Address c  ");
+            sbTSQL.Append(" 	Group by CustomerID  ");
+            sbTSQL.Append(" )ainfo on a.CustomerID=ainfo.CustomerID ");
+            sbTSQL.Append(" left join  ");
+            sbTSQL.Append(" (");
+            sbTSQL.Append("select CustomerID");
+            sbTSQL.Append(",ContactsInfo=STUFF(cast(");
+            sbTSQL.Append("(");
+            sbTSQL.Append("SELECT '**********'+Numbers from TB_Contacts a ");
+            sbTSQL.Append("where a.CustomerID= c.CustomerID ORDER  BY seq  FOR XML PATH('')");
+            sbTSQL.Append(") as nvarchar(1000)");
+            sbTSQL.Append(") ,1,10,'')");
+            sbTSQL.Append("from TB_Contacts c");
+            sbTSQL.Append(" Group by CustomerID");
+            sbTSQL.Append(")c on a.CustomerID=c.CustomerID ");
+            sbTSQL.Append(" left join TB_User d on a.UpdateUser=d.UserID");
+
+
+
+            if (strCustomerIDS.Length > 0)
+            {
+                sbTSQL.Append(" where a.CustomerID in (" + strCustomerIDS + ") ");
+            }
+            cmd.CommandText = sbTSQL.ToString();
+            DataSet ds = SQLUtil.QueryDS(cmd);
+            return ds;
+        }
+
+
 
         /// <summary>
         /// 修改資料Customer
@@ -496,6 +552,20 @@ namespace DingYaoERP.DAL
             DataSet ds = SQLUtil.QueryDS(cmd);
             return ds;
         }
+
+        ///// <summary>
+        ///// 以customerid取得最後交易日及欠籃數
+        ///// </summary>
+        //public DataSet ContactPerson(string strCustomerID)
+        //{
+        //    SqlCommand cmd = new SqlCommand("STP_ContactPerson");
+        //    cmd.CommandType = CommandType.StoredProcedure;
+        //    cmd.Parameters.Add("@CustomerID", SqlDbType.NVarChar).Value = strCustomerID;
+        //    DataSet ds = SQLUtil.QueryDS(cmd);
+        //    return ds;
+        //}
+
+
 
         /// <summary>
         /// 由帳號與密碼取得客戶資料
@@ -615,7 +685,7 @@ namespace DingYaoERP.DAL
         }
 
 
-        
+
 
         #endregion
     }

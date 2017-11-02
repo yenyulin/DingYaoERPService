@@ -118,6 +118,10 @@ namespace DingYaoERPService
                 // 建立客戶供應商excel
                 CreateCustomerAndSupplierExcel();
             }
+            else if (e.SignalTime.ToString("HHmm") == "1700")
+            {
+                UpdateInventory();
+            }
            
         }
 
@@ -1400,7 +1404,90 @@ namespace DingYaoERPService
         }
         #endregion
 
-        
+        #region 月盤點 自動盤點
+
+        protected void UpdateInventory()
+        {
+            try
+            {
+                List<MInventory> li = new DInventory().GetAutoStartList();
+                foreach (MInventory modInventory in li)
+                {
+                    int intInventoryID = modInventory.InventoryID;
+
+                    modInventory.InventoryStatus = "盤點中";
+                    modInventory.InventoryBegin = DateTime.Now;
+
+                    new DInventory().Edit(modInventory);
+
+
+                    MInventoryProduct modInventoryProduct;
+
+                    List<MVWInventoryProductStock> lips = new DVWInventoryProductStock().GetListByInventoryID(intInventoryID);
+
+
+                    new DInventoryProduct().Del(intInventoryID);
+                    //2.再新增盤點產品
+                    
+                    foreach (MVWInventoryProductStock mod in lips)
+                    {
+                        #region 儲存實際 產品
+
+                        modInventoryProduct = new MInventoryProduct();
+                        modInventoryProduct.InventoryID = intInventoryID;
+                        modInventoryProduct.ProductCode = mod.ProductCode;
+                        //開始盤點時 刷新庫存再存進去
+                        modInventoryProduct.CheckQty1 = mod.CheckQty1;
+                        modInventoryProduct.CheckQty2 = mod.CheckQty2;
+
+                        modInventoryProduct.StockQtySys1 = mod.StockQtySys1;
+                        modInventoryProduct.StockQtySys2 = mod.StockQtySys2;
+                        //重新取得最新的庫存
+                        modInventoryProduct.StockQtySys1 = new DStock().GetTotalStockQtyWhenNoIsNull(modInventoryProduct.ProductCode, mod.FactoryID, SetPrStockTypeTxt(mod.Pr));
+                        modInventoryProduct.StockQtySys2 = new DStock().GetTotalStockQtyWhenNoIsNull(modInventoryProduct.ProductCode, mod.FactoryID, "特價庫存");
+
+                        modInventoryProduct.StockDate1 = mod.StockDate1;
+                        modInventoryProduct.StockDate2 = mod.StockDate2;
+                        modInventoryProduct.ExpirationDate1 = mod.ExpirationDate1;
+                        modInventoryProduct.ExpirationDate2 = mod.ExpirationDate2;
+
+                        new DInventoryProduct().Add(modInventoryProduct);
+
+                        #endregion
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                EventLog.WriteEntry("DingYaoERPServer", "將盤點改為盤點開始" + ex.ToString(), EventLogEntryType.Warning, 405);
+            }
+
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string SetPrStockTypeTxt(string strPr)
+        {
+            string StockType = "一般庫存";
+            if (strPr == "市藏")
+            {
+                StockType = "市購庫存";
+            }
+            else if (strPr == "市凍")
+            {
+                StockType = "市購庫存";
+            }
+            else if (strPr == "市溫")
+            {
+                StockType = "市購庫存";
+            }
+            return StockType;
+        }
+
+        #endregion        
 
         #region 會計傳票
 
