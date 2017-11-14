@@ -322,6 +322,16 @@ namespace DingYaoERP.Models
         public string UseAppStatus { get; set; }
 
         /// <summary>
+        /// 發票載具碼
+        /// </summary>
+        public string InvoicingVehiclesNo { get; set; }
+
+        /// <summary>
+        /// 捐贈碼
+        /// </summary>
+        public string DonateCode { get; set; }
+
+        /// <summary>
         /// 建立時間
         /// </summary>
         public DateTime CreateDate { get; set; }

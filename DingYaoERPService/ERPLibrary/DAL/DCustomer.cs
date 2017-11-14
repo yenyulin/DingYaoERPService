@@ -88,6 +88,8 @@ namespace DingYaoERP.DAL
             cmd.Parameters.Add("@DistinguishOrder", SqlDbType.Bit).Value = mod.DistinguishOrder;
             cmd.Parameters.Add("@UseWebStatus", SqlDbType.NVarChar).Value = mod.UseWebStatus;
             cmd.Parameters.Add("@UseAppStatus", SqlDbType.NVarChar).Value = mod.UseAppStatus;
+            cmd.Parameters.Add("@InvoicingVehiclesNo", SqlDbType.NVarChar).Value = mod.InvoicingVehiclesNo;
+            cmd.Parameters.Add("@DonateCode", SqlDbType.NVarChar).Value = mod.DonateCode;
             cmd.Parameters.Add("@CreateUser", SqlDbType.NVarChar).Value = mod.CreateUser;
             if (SQLUtil.ExecuteSql(cmd) > 0)
             {
@@ -167,6 +169,8 @@ namespace DingYaoERP.DAL
             cmd.Parameters.Add("@DistinguishOrder", SqlDbType.Bit).Value = mod.DistinguishOrder;
             cmd.Parameters.Add("@UseWebStatus", SqlDbType.NVarChar).Value = mod.UseWebStatus;
             cmd.Parameters.Add("@UseAppStatus", SqlDbType.NVarChar).Value = mod.UseAppStatus;
+            cmd.Parameters.Add("@InvoicingVehiclesNo", SqlDbType.NVarChar).Value = mod.InvoicingVehiclesNo;
+            cmd.Parameters.Add("@DonateCode", SqlDbType.NVarChar).Value = mod.DonateCode;
             cmd.Parameters.Add("@UpdateUser", SqlDbType.NVarChar).Value = mod.UpdateUser;
             return SQLUtil.ExecuteSql(cmd) > 0;
         }
@@ -285,6 +289,8 @@ namespace DingYaoERP.DAL
                 mod.DistinguishOrder = bool.Parse(dr["DistinguishOrder"].ToString());
                 mod.UseWebStatus = dr["UseWebStatus"].ToString();
                 mod.UseAppStatus = dr["UseAppStatus"].ToString();
+                mod.InvoicingVehiclesNo = dr["InvoicingVehiclesNo"].ToString();
+                mod.DonateCode = dr["DonateCode"].ToString();
                 mod.CreateDate = DateTime.Parse(dr["CreateDate"].ToString());
                 mod.CreateUser = dr["CreateUser"].ToString();
                 mod.UpdateDate = DateTime.Parse(dr["UpdateDate"].ToString());
@@ -361,6 +367,8 @@ namespace DingYaoERP.DAL
             mod.DistinguishOrder = bool.Parse(dr["DistinguishOrder"].ToString());
             mod.UseWebStatus = dr["UseWebStatus"].ToString();
             mod.UseAppStatus = dr["UseAppStatus"].ToString();
+            mod.InvoicingVehiclesNo = dr["InvoicingVehiclesNo"].ToString();
+            mod.DonateCode = dr["DonateCode"].ToString();
             mod.CreateDate = DateTime.Parse(dr["CreateDate"].ToString());
             mod.CreateUser = dr["CreateUser"].ToString();
             mod.UpdateDate = DateTime.Parse(dr["UpdateDate"].ToString());
