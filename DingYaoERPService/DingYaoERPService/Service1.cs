@@ -67,6 +67,14 @@ namespace DingYaoERPService
                 //    DeviceUpdate();
                 //}
             }
+
+            if (e.SignalTime.Minute % 5 == 0)
+            {
+                InvoiceUpdateFromEINV_DB();
+            }
+
+            
+
             ////以下為周期提醒
             if (e.SignalTime.ToString("HHmm") == "0010")
             {
@@ -124,6 +132,23 @@ namespace DingYaoERPService
             }
            
         }
+
+        #region 更新發票資訊
+
+        protected void InvoiceUpdateFromEINV_DB()
+        {
+            try
+            {
+                new DEINV().InvoiceUpdateFromEINV_DB();
+
+                //EventLog.WriteEntry("DingYaoERPServer", "機績效月儲存成功", EventLogEntryType.Warning, 200);
+            }
+            catch (Exception ex)
+            {
+                //EventLog.WriteEntry("DingYaoERPServer", "更新發票資訊" + ex.ToString(), EventLogEntryType.Warning, 408);
+            }
+        }
+        #endregion
 
         #region  更新供應商總訂購金額叫貨頻率進貨重量退貨重量
 

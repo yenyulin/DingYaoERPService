@@ -53,6 +53,7 @@
     <Compile Include="DAL\DCycleWorkItem.cs" />
     <Compile Include="DAL\DDayAccount.cs" />
     <Compile Include="DAL\DDeliveryManPerformanceMonth.cs" />
+    <Compile Include="DAL\DEINV.cs" />
     <Compile Include="DAL\DInventory.cs" />
     <Compile Include="DAL\DInventoryProduct.cs" />
     <Compile Include="DAL\DMonthBasketCustomer.cs" />
