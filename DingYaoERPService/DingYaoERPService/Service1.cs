@@ -140,12 +140,11 @@ namespace DingYaoERPService
             try
             {
                 new DEINV().InvoiceUpdateFromEINV_DB();
-
-                //EventLog.WriteEntry("DingYaoERPServer", "機績效月儲存成功", EventLogEntryType.Warning, 200);
+                EventLog.WriteEntry("DingYaoERPServer", "更新發票資訊", EventLogEntryType.Warning, 200);
             }
             catch (Exception ex)
             {
-                //EventLog.WriteEntry("DingYaoERPServer", "更新發票資訊" + ex.ToString(), EventLogEntryType.Warning, 408);
+                EventLog.WriteEntry("DingYaoERPServer", "更新發票資訊失敗" + ex.ToString(), EventLogEntryType.Warning, 408);
             }
         }
         #endregion
