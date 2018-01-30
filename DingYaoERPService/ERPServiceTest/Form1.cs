@@ -55,8 +55,8 @@ namespace ERPServiceTest
 
                 //DateTime dt = DateTime.Now.AddMonths(-1);
                 //SetDeliveryManPerformanceMonth(Convert.ToInt32(dt.Year),Convert.ToInt32(dt.Month));
-
-                CreateCustomerAndSupplierExcel();
+                UpdatePrice();
+                //CreateCustomerAndSupplierExcel();
                 //UpdateCustomerMonthSumMoneyAndPurchaseFrequency();
                 //UpdateSupplierMonthSumMoneyAndPurchaseFrequency();
 
@@ -1127,6 +1127,9 @@ namespace ERPServiceTest
                     List<MPriceFutureProduct> liProductPrice = new DPriceFutureProduct().GetListByPriceFutureID(mpf.PriceFutureID);
                     foreach (MPriceFutureProduct mFutureProduct in liProductPrice)
                     {
+                        MPrice modOldPrice = liPrice.Where(o => o.ProductCode == mFutureProduct.ProductCode && mFutureProduct.PriceQty==o.PriceQty).FirstOrDefault();
+
+
                         MPrice mod = new MPrice();
 
                         mod.ProductCode = mFutureProduct.ProductCode;
@@ -1136,6 +1139,20 @@ namespace ERPServiceTest
                         mod.CheckType = mFutureProduct.CheckType;
                         mod.MinValue = Convert.ToDecimal(mFutureProduct.MinValue);
                         mod.MaxValue = Convert.ToDecimal(mFutureProduct.MaxValue);
+
+                        if (modOldPrice != null)
+                        {
+                            if (mod.Price != modOldPrice.Price)
+                                mod.PriceOld = modOldPrice.Price;
+                            else
+                                mod.PriceOld = modOldPrice.PriceOld;
+                        }
+                        else
+                        {
+                            mod.PriceOld = mod.Price;
+                        }
+                      
+
                         mod.CreateUser = "admin";
                         new DPrice().Add(mod);
                     }

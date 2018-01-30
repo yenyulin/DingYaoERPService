@@ -30,6 +30,7 @@ namespace DingYaoERP.DAL
             cmd.Parameters.Add("@PriceGroupID", SqlDbType.NVarChar).Value = mod.PriceGroupID;
             cmd.Parameters.Add("@PriceQty", SqlDbType.Decimal).Value = mod.PriceQty;
             cmd.Parameters.Add("@Price", SqlDbType.Decimal).Value = mod.Price;
+            cmd.Parameters.Add("@PriceOld", SqlDbType.Decimal).Value = mod.PriceOld;
             cmd.Parameters.Add("@CheckType", SqlDbType.NVarChar).Value = mod.CheckType;
             cmd.Parameters.Add("@MinValue", SqlDbType.Decimal).Value = mod.MinValue;
             cmd.Parameters.Add("@MaxValue", SqlDbType.Decimal).Value = mod.MaxValue;
@@ -55,6 +56,7 @@ namespace DingYaoERP.DAL
             cmd.Parameters.Add("@PriceGroupID", SqlDbType.NVarChar).Value = mod.PriceGroupID;
             cmd.Parameters.Add("@PriceQty", SqlDbType.Decimal).Value = mod.PriceQty;
             cmd.Parameters.Add("@Price", SqlDbType.Decimal).Value = mod.Price;
+            cmd.Parameters.Add("@PriceOld", SqlDbType.Decimal).Value = mod.PriceOld;
             cmd.Parameters.Add("@CheckType", SqlDbType.NVarChar).Value = mod.CheckType;
             cmd.Parameters.Add("@MinValue", SqlDbType.Decimal).Value = mod.MinValue;
             cmd.Parameters.Add("@MaxValue", SqlDbType.Decimal).Value = mod.MaxValue;
@@ -113,6 +115,7 @@ namespace DingYaoERP.DAL
                 mod.PriceGroupID = dr["PriceGroupID"].ToString();
                 mod.PriceQty = Decimal.Parse(dr["PriceQty"].ToString());
                 mod.Price = Decimal.Parse(dr["Price"].ToString());
+                mod.PriceOld = Decimal.Parse(dr["PriceOld"].ToString());
                 mod.CheckType = dr["CheckType"].ToString();
                 mod.MinValue = Decimal.Parse(dr["MinValue"].ToString());
                 mod.MaxValue = Decimal.Parse(dr["MaxValue"].ToString());
@@ -135,6 +138,7 @@ namespace DingYaoERP.DAL
             mod.PriceGroupID = dr["PriceGroupID"].ToString();
             mod.PriceQty = Decimal.Parse(dr["PriceQty"].ToString());
             mod.Price = Decimal.Parse(dr["Price"].ToString());
+            mod.PriceOld = Decimal.Parse(dr["PriceOld"].ToString());
             mod.CheckType = dr["CheckType"].ToString();
             mod.MinValue = Decimal.Parse(dr["MinValue"].ToString());
             mod.MaxValue = Decimal.Parse(dr["MaxValue"].ToString());

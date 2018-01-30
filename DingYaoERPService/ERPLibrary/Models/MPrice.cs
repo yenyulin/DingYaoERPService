@@ -69,5 +69,10 @@ namespace DingYaoERP.Models
         /// </summary>
         public string UpdateUser { get; set; }
 
+        /// <summary>
+        /// 前次售價
+        /// </summary>
+        public decimal PriceOld { get; set; }
+
     }
 }

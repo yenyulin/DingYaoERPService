@@ -852,6 +852,9 @@ namespace DingYaoERPService
                     {
                         MPrice mod = new MPrice();
 
+                        MPrice modOldPrice = liPrice.Where(o => o.ProductCode == mFutureProduct.ProductCode && mFutureProduct.PriceQty == o.PriceQty).FirstOrDefault();
+
+
                         mod.ProductCode = mFutureProduct.ProductCode;
                         mod.PriceGroupID = mpf.PriceGroupID;
                         mod.PriceQty = Convert.ToDecimal(mFutureProduct.PriceQty);
@@ -859,6 +862,19 @@ namespace DingYaoERPService
                         mod.CheckType = mFutureProduct.CheckType;
                         mod.MinValue = Convert.ToDecimal(mFutureProduct.MinValue);
                         mod.MaxValue = Convert.ToDecimal(mFutureProduct.MaxValue);
+
+                        if (modOldPrice != null)
+                        {
+                            if (mod.Price != modOldPrice.Price)
+                                mod.PriceOld = modOldPrice.Price;
+                            else
+                                mod.PriceOld = modOldPrice.PriceOld;
+                        }
+                        else
+                        {
+                            mod.PriceOld = mod.Price;
+                        }
+
                         mod.CreateUser = "admin";
                         new DPrice().Add(mod);
                     }
