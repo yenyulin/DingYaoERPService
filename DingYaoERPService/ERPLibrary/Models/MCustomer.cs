@@ -14,7 +14,6 @@ namespace DingYaoERP.Models
         /// </summary>
         public string CustomerID { get; set; }
 
-
         /// <summary>
         /// 總公司代碼
         /// </summary>
@@ -104,7 +103,6 @@ namespace DingYaoERP.Models
         /// 是否列印發票明細
         /// </summary>
         public bool UnifynoDetail { get; set; }
-
 
         /// <summary>
         /// 付款條件序號
@@ -200,6 +198,11 @@ namespace DingYaoERP.Models
         /// 備註
         /// </summary>
         public string Remarks { get; set; }
+
+        /// <summary>
+        /// 籃框備註
+        /// </summary>
+        public string BasketRemarks { get; set; }
 
         /// <summary>
         /// 是否完成新增
@@ -317,9 +320,19 @@ namespace DingYaoERP.Models
         public string UseWebStatus { get; set; }
 
         /// <summary>
-        /// APP開通狀態 (未開通、開通、過期)
+        /// APP開通狀態 (未開通、開通、過期、鎖定)
         /// </summary>
         public string UseAppStatus { get; set; }
+
+        ///// <summary>
+        ///// 可使用web
+        ///// </summary>
+        //public bool UseWeb { get; set; }
+
+        ///// <summary>
+        ///// 可使用App
+        ///// </summary>
+        //public bool UseApp { get; set; }
 
         /// <summary>
         /// 發票載具碼
@@ -330,6 +343,21 @@ namespace DingYaoERP.Models
         /// 捐贈碼
         /// </summary>
         public string DonateCode { get; set; }
+
+        /// <summary>
+        /// APP帳號
+        /// </summary>
+        public string AppAccount { get; set; }
+
+        /// <summary>
+        /// APP密碼
+        /// </summary>
+        public string AppPassword { get; set; }
+
+        /// <summary>
+        /// App啟用日期
+        /// </summary>
+        public DateTime? AppActivedDate { get; set; }
 
         /// <summary>
         /// 建立時間

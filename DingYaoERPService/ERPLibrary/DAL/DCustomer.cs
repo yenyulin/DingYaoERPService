@@ -64,6 +64,7 @@ namespace DingYaoERP.DAL
             cmd.Parameters.Add("@Note2", SqlDbType.NVarChar).Value = mod.Note2;
             cmd.Parameters.Add("@Star", SqlDbType.NVarChar).Value = mod.Star;
             cmd.Parameters.Add("@Remarks", SqlDbType.NVarChar).Value = mod.Remarks;
+            cmd.Parameters.Add("@BasketRemarks", SqlDbType.NVarChar).Value = mod.BasketRemarks;
             cmd.Parameters.Add("@IsComplete", SqlDbType.Bit).Value = mod.IsComplete;
             cmd.Parameters.Add("@AccountReceivable", SqlDbType.Decimal).Value = SQLUtil.CheckDBValue(mod.AccountReceivable);
             cmd.Parameters.Add("@AccountReceivableDays", SqlDbType.Int).Value = SQLUtil.CheckDBValue(mod.AccountReceivableDays);
@@ -90,6 +91,9 @@ namespace DingYaoERP.DAL
             cmd.Parameters.Add("@UseAppStatus", SqlDbType.NVarChar).Value = mod.UseAppStatus;
             cmd.Parameters.Add("@InvoicingVehiclesNo", SqlDbType.NVarChar).Value = mod.InvoicingVehiclesNo;
             cmd.Parameters.Add("@DonateCode", SqlDbType.NVarChar).Value = mod.DonateCode;
+            cmd.Parameters.Add("@AppAccount", SqlDbType.NVarChar).Value = mod.AppAccount;
+            cmd.Parameters.Add("@AppPassword", SqlDbType.NVarChar).Value = Security.Encrypt(mod.AppPassword);
+            cmd.Parameters.Add("@AppActivedDate", SqlDbType.DateTime).Value = SQLUtil.CheckDBValue(mod.AppActivedDate);
             cmd.Parameters.Add("@CreateUser", SqlDbType.NVarChar).Value = mod.CreateUser;
             if (SQLUtil.ExecuteSql(cmd) > 0)
             {
@@ -145,6 +149,7 @@ namespace DingYaoERP.DAL
             cmd.Parameters.Add("@Note2", SqlDbType.NVarChar).Value = mod.Note2;
             cmd.Parameters.Add("@Star", SqlDbType.NVarChar).Value = mod.Star;
             cmd.Parameters.Add("@Remarks", SqlDbType.NVarChar).Value = mod.Remarks;
+            cmd.Parameters.Add("@BasketRemarks", SqlDbType.NVarChar).Value = mod.BasketRemarks;
             cmd.Parameters.Add("@IsComplete", SqlDbType.Bit).Value = mod.IsComplete;
             cmd.Parameters.Add("@AccountReceivable", SqlDbType.Decimal).Value = SQLUtil.CheckDBValue(mod.AccountReceivable);
             cmd.Parameters.Add("@AccountReceivableDays", SqlDbType.Int).Value = SQLUtil.CheckDBValue(mod.AccountReceivableDays);
@@ -171,6 +176,9 @@ namespace DingYaoERP.DAL
             cmd.Parameters.Add("@UseAppStatus", SqlDbType.NVarChar).Value = mod.UseAppStatus;
             cmd.Parameters.Add("@InvoicingVehiclesNo", SqlDbType.NVarChar).Value = mod.InvoicingVehiclesNo;
             cmd.Parameters.Add("@DonateCode", SqlDbType.NVarChar).Value = mod.DonateCode;
+            cmd.Parameters.Add("@AppAccount", SqlDbType.NVarChar).Value = mod.AppAccount;
+            cmd.Parameters.Add("@AppPassword", SqlDbType.NVarChar).Value = Security.Encrypt(mod.AppPassword);
+            cmd.Parameters.Add("@AppActivedDate", SqlDbType.DateTime).Value = SQLUtil.CheckDBValue(mod.AppActivedDate);
             cmd.Parameters.Add("@UpdateUser", SqlDbType.NVarChar).Value = mod.UpdateUser;
             return SQLUtil.ExecuteSql(cmd) > 0;
         }
@@ -265,6 +273,7 @@ namespace DingYaoERP.DAL
                 mod.Note2 = dr["Note2"].ToString();
                 mod.Star = dr["Star"].ToString();
                 mod.Remarks = dr["Remarks"].ToString();
+                mod.BasketRemarks = dr["BasketRemarks"].ToString();
                 mod.IsComplete = bool.Parse(dr["IsComplete"].ToString());
                 mod.AccountReceivable = SQLUtil.GetDecimal(dr["AccountReceivable"]);
                 mod.AccountReceivableDays = SQLUtil.GetInt(dr["AccountReceivableDays"]);
@@ -291,6 +300,9 @@ namespace DingYaoERP.DAL
                 mod.UseAppStatus = dr["UseAppStatus"].ToString();
                 mod.InvoicingVehiclesNo = dr["InvoicingVehiclesNo"].ToString();
                 mod.DonateCode = dr["DonateCode"].ToString();
+                mod.AppAccount = dr["AppAccount"].ToString();
+                mod.AppPassword = Security.Decrypt(dr["AppPassword"].ToString());
+                mod.AppActivedDate = SQLUtil.GetDateTime(dr["AppActivedDate"]);
                 mod.CreateDate = DateTime.Parse(dr["CreateDate"].ToString());
                 mod.CreateUser = dr["CreateUser"].ToString();
                 mod.UpdateDate = DateTime.Parse(dr["UpdateDate"].ToString());
@@ -343,6 +355,7 @@ namespace DingYaoERP.DAL
             mod.Note2 = dr["Note2"].ToString();
             mod.Star = dr["Star"].ToString();
             mod.Remarks = dr["Remarks"].ToString();
+            mod.BasketRemarks = dr["BasketRemarks"].ToString();
             mod.IsComplete = bool.Parse(dr["IsComplete"].ToString());
             mod.AccountReceivable = SQLUtil.GetDecimal(dr["AccountReceivable"]);
             mod.AccountReceivableDays = SQLUtil.GetInt(dr["AccountReceivableDays"]);
@@ -369,6 +382,9 @@ namespace DingYaoERP.DAL
             mod.UseAppStatus = dr["UseAppStatus"].ToString();
             mod.InvoicingVehiclesNo = dr["InvoicingVehiclesNo"].ToString();
             mod.DonateCode = dr["DonateCode"].ToString();
+            mod.AppAccount = dr["AppAccount"].ToString();
+            mod.AppPassword = Security.Decrypt(dr["AppPassword"].ToString());
+            mod.AppActivedDate = SQLUtil.GetDateTime(dr["AppActivedDate"]);
             mod.CreateDate = DateTime.Parse(dr["CreateDate"].ToString());
             mod.CreateUser = dr["CreateUser"].ToString();
             mod.UpdateDate = DateTime.Parse(dr["UpdateDate"].ToString());
@@ -621,6 +637,19 @@ namespace DingYaoERP.DAL
             return GetList(ds);
         }
 
+        /// <summary>
+        /// 發票折讓客戶選擇
+        /// </summary>
+        public DataTable GetCustomerInvoiceStatByDtScopeAndMoneyLimit(string strDtBegin, string strDtEnd, decimal decScopeMoney)
+        {
+            SqlCommand cmd = new SqlCommand("STP_CustomerInvoiceStatByDtScopeAndMoneyLimit");
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.Add("@DtBegin", SqlDbType.NVarChar).Value = strDtBegin;
+            cmd.Parameters.Add("@DtEnd", SqlDbType.NVarChar).Value = strDtEnd;
+            cmd.Parameters.Add("@ScopeMoney", SqlDbType.Decimal).Value = decScopeMoney;
+            return SQLUtil.QueryDS(cmd).Tables[0];
+        }
+
         #endregion
 
         #region  webservice
@@ -694,6 +723,69 @@ namespace DingYaoERP.DAL
 
 
 
+
+        #endregion
+
+
+
+        #region  App
+
+        /// <summary>
+        /// APP由帳號與密碼取得客戶資料
+        /// </summary>
+        public Models.MCustomer GetByAppAccountAppPassword(string strAppAccount, string strAppPassword)
+        {
+            SqlCommand cmd = new SqlCommand("STP_CustomerGetByAppAccountAppPassword");
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.Add("@AppAccount", SqlDbType.NVarChar).Value = strAppAccount;
+            cmd.Parameters.Add("@AppPassword", SqlDbType.NVarChar).Value = Security.Encrypt(strAppPassword);
+            SqlDataReader dr = SQLUtil.QueryDR(cmd);
+            bool isHasRows = dr.HasRows;
+            Models.MCustomer mod = SetModel(dr);
+            dr.Close();
+            if (isHasRows)
+            {
+                return mod;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// 由@AppAccount計算Customer筆數
+        /// </summary>
+        public int CountByAppAccount(string strAppAccount)
+        {
+            SqlCommand cmd = new SqlCommand("STP_CustomerCountByAppAccount");
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.Add("@AppAccount", SqlDbType.NVarChar).Value = strAppAccount;
+            return Convert.ToInt32(SQLUtil.ExecuteScalar(cmd));
+        }
+
+        /// <summary>
+        /// 由@AppAccount取得Customer
+        /// </summary>
+        public Models.MCustomer GetByAppAccount(string strAppAccount)
+        {
+            SqlCommand cmd = new SqlCommand("STP_CustomerGetByAppAccount");
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.Add("@AppAccount", SqlDbType.NVarChar).Value = strAppAccount;
+            
+            SqlDataReader dr = SQLUtil.QueryDR(cmd);
+            bool isHasRows = dr.HasRows;
+            Models.MCustomer mod = SetModel(dr);
+            dr.Close();
+            if (isHasRows)
+            {
+                return mod;
+            }
+            else
+            {
+                return null;
+            }
+        }
 
         #endregion
     }
